@@ -38,7 +38,7 @@ export default function SignIn() {
           <Image
             style={{ height: hp(30) }}
             resizeMode="contain"
-            source={require("../assets/images/event.jpg")}
+            source={require("../assets/images/head.jpg")}
             className="w-full h-full"
           />
         </View>
@@ -89,7 +89,7 @@ export default function SignIn() {
             <View>
               {loading ? (
                 <View className="flex-row justify-center">
-                  <Loading size={hp(6.5)} />
+                  <Loading size={hp(8)} />
                 </View>
               ) : (
                 <TouchableOpacity

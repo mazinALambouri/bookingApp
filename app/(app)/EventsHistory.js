@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 const EventsHistory = () => {
   const [bookings, setBookings] = useState([]);
 
   const fetchBookings = async () => {
     try {
-      const storedBookings = await AsyncStorage.getItem('bookings');
+      const storedBookings = await AsyncStorage.getItem("bookings");
       if (storedBookings) {
         setBookings(JSON.parse(storedBookings));
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error("Error fetching bookings:", error);
     }
   };
 
@@ -28,7 +28,7 @@ const EventsHistory = () => {
       </Text>
       <Text
         className={`text-xs font-bold uppercase ${
-          item.status === 'Confirmed' ? 'text-green-600' : 'text-orange-600'
+          item.status === "Confirmed" ? "text-green-600" : "text-orange-600"
         }`}
       >
         {item.status}
@@ -37,10 +37,19 @@ const EventsHistory = () => {
   );
 
   return (
-    <View className="flex-1 p-4 bg-white">
-      <Text className="text-2xl font-bold text-center text-gray-800 mb-4">
-        Booking History
-      </Text>
+    <View className="flex-1  bg-white">
+      <View
+        style={{
+          height: hp("10%"),
+          
+        }}
+        className="flex-row justify-between items-center bg-customRed text-black rounded shadow-lg p-4"
+      >
+        <Text className="text-2xl font-bold text-white text-center">
+          MEETING ROOMS
+        </Text>
+      </View>
+
       {bookings.length > 0 ? (
         <FlatList
           data={bookings}

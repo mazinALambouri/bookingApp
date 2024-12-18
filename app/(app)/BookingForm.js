@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Alert } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import firestore from "@react-native-firebase/firestore";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 const BookingForm = ({ navigation }) => {
-  const [itemName, setItemName] = useState('');
+  const [itemName, setItemName] = useState("");
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -17,7 +19,7 @@ const BookingForm = ({ navigation }) => {
       setDate(selectedDate);
     }
   };
- 
+
   // Handle Time Picker change
   const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
@@ -27,79 +29,103 @@ const BookingForm = ({ navigation }) => {
   };
 
   const saveBooking = async () => {
-    if (!itemName) {
-      Alert.alert('Error', 'Please enter the room name.');
-      return;
-    }
+    router.push({ pathname: "EventsHistory", params: { item } });
 
     const booking = {
       id: Date.now().toString(),
       itemName,
       date: date.toLocaleDateString(),
       time: time.toLocaleTimeString(),
-      status: 'Pending',
+      status: "Confirmed",
     };
-
+    const openFeatureEvent = (item) => {
+      router.push({ pathname: "EventsHistory", params: { item } });
+    };
     try {
+      // Save to Firebase
+      await firestore().collection("bookings").add(booking);
+
       // Save to AsyncStorage
-      const storedBookings = await AsyncStorage.getItem('bookings');
+      const storedBookings = await AsyncStorage.getItem("bookings");
       const bookings = storedBookings ? JSON.parse(storedBookings) : [];
       bookings.push(booking);
-      await AsyncStorage.setItem('bookings', JSON.stringify(bookings));
+      await AsyncStorage.setItem("bookings", JSON.stringify(bookings));
 
-      Alert.alert('Success', 'Booking saved successfully');
+      Alert.alert("Success", "Booking saved successfully");
 
-      // Navigate to EventsHistory screen with the booking data
-      navigation.navigate('EventsHistory', { newBooking: booking });
+      // Navigate to EventsHistory screen
+      navigation.navigate("EventsHistory");
     } catch (error) {
-      console.error('Error saving booking:', error);
-      Alert.alert('Error', 'Failed to save booking');
+      console.error("Error saving booking:", error);
+      Alert.alert("Error", "Failed to save booking");
     }
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: 'white' }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 }}>
-        Booking Form
-      </Text>
-
-      <Text style={{ fontSize: 16, marginBottom: 8 }}>item.name</Text>
-      <TextInput
+    <View className="flex-1  bg-white">
+      <View
         style={{
-          borderWidth: 1,
-          borderColor: 'gray',
-          borderRadius: 8,
-          padding: 8,
-          marginBottom: 16,
+          height: hp("10%"),
         }}
-        placeholder="Enter room name"
-        value={itemName}
-        onChangeText={setItemName}
-      />
-
-      <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
+        className="flex-row justify-between items-center bg-customRed text-black rounded shadow-lg p-4"
+      >
+        <Text className="text-2xl font-bold text-white text-center">
+          YOUR RESERVATION DETAILS
+        </Text>
+      </View>
+      <View className="flex-1 p-8 bg-gray-200">
+        <Text style={{ fontSize: 16, marginBottom: 8 }}>Item Name:</Text>
+        <TextInput
+          style={{
+            borderWidth: 1,
+            borderColor: "gray",
+            borderRadius: 8,
+            padding: 8,
+            marginBottom: 16,
+          }}
+          placeholder="Enter item name"
+          value={itemName}
+          onChangeText={setItemName}
         />
-      )}
-      <Text style={{ fontSize: 16, marginVertical: 8 }}>Selected Date: {date.toLocaleDateString()}</Text>
 
-      <Button title="Select Time" onPress={() => setShowTimePicker(true)} />
-      {showTimePicker && (
-        <DateTimePicker
-          value={time}
-          mode="time"
-          display="default"
-          onChange={handleTimeChange}
-        />
-      )}
-      <Text style={{ fontSize: 16, marginVertical: 8 }}>Selected Time: {time.toLocaleTimeString()}</Text>
+        <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
+        <Text style={{ fontSize: 16, marginVertical: 8 }}>
+          Selected Date: {date.toLocaleDateString()}
+        </Text>
 
-      <Button title="Submit Booking" onPress={saveBooking} />
+        <Button title="Select Time" onPress={() => setShowTimePicker(true)} />
+        {showTimePicker && (
+          <DateTimePicker
+            value={time}
+            mode="time"
+            display="default"
+            onChange={handleTimeChange}
+          />
+        )}
+        <Text style={{ fontSize: 16, marginVertical: 8 }}>
+          Selected Time: {time.toLocaleTimeString()}
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 18,
+            color: "blue",
+            textAlign: "center",
+            marginTop: 16,
+          }}
+          onPress={saveBooking}
+        >
+          Submit Booking
+        </Text>
+      </View>
     </View>
   );
 };

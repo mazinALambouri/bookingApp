@@ -75,9 +75,17 @@ export default function Home() {
       </View>
       <View className="flex-1 ">
         <Pressable
-          className="mt-2 p-2 bg-customRed rounded"
-          onPress={() => openFeatureEvent(item)}
-          disabled={!item.available}
+          onPress={()=>setModalVisible(!modalVisible)}
+             style={{
+               flexDirection: "row",
+               alignItems: "center",
+                justifyContent: "center",
+               gap: 10,
+               paddingHorizontal: 10,
+               borderColor:"#FFC72C",
+                borderWidth:2,
+                paddingVertical:5,
+             }}
         >
           <Text className="text-black font-bold text-center">
             {item.available ? "Book Now" : "Unavailable"}
@@ -89,9 +97,14 @@ export default function Home() {
 
   return (
     <View className="flex-1 bg-white ">
-      <View className="flex-row justify-between items-center bg-customRed bg-opacity-75 text-black shadow-lg p-2">
-        <Text className=" text-2xl font-bold text-center">
-          Aressh
+      <View
+      style={{ 
+        height: hp("10%"), 
+        
+       }} 
+       className="flex-row justify-between items-center bg-customRed text-black rounded shadow-lg p-4">
+        <Text className=" text-2xl font-bold text-white text-center">
+          MeetMeHere
         </Text>
         <Pressable onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={24} color="black" />
@@ -100,7 +113,7 @@ export default function Home() {
       
       <View className="flex-1">
         <ImageBackground
-          source={require("../../assets/images/meeting.jpg")}
+          source={require("../../assets/images/to.jpg")}
           style={{ width: "100%", height: "100%" }}
           resizeMode="cover"
         ></ImageBackground>
