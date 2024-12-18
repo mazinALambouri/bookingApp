@@ -75,17 +75,9 @@ export default function Home() {
       </View>
       <View className="flex-1 ">
         <Pressable
-          onPress={()=>setModalVisible(!modalVisible)}
-             style={{
-               flexDirection: "row",
-               alignItems: "center",
-                justifyContent: "center",
-               gap: 10,
-               paddingHorizontal: 10,
-               borderColor:"#FFC72C",
-                borderWidth:2,
-                paddingVertical:5,
-             }}
+          className="mt-2 p-2 bg-customRed rounded"
+          onPress={() => openFeatureEvent(item)}
+          disabled={!item.available}
         >
           <Text className="text-black font-bold text-center">
             {item.available ? "Book Now" : "Unavailable"}
