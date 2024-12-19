@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, Button, Alert, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import firestore from "@react-native-firebase/firestore";
@@ -11,6 +11,21 @@ const BookingForm = ({ navigation }) => {
   const [time, setTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [mode, setMode] = useState('date');
+  const showMode = (currentMode) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(true);
+      setMode(currentMode);
+    }
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
 
   // Handle Date Picker change
   const handleDateChange = (event, selectedDate) => {
@@ -29,8 +44,6 @@ const BookingForm = ({ navigation }) => {
   };
 
   const saveBooking = async () => {
-    router.push({ pathname: "EventsHistory", params: { item } });
-
     const booking = {
       id: Date.now().toString(),
       itemName,
@@ -38,9 +51,7 @@ const BookingForm = ({ navigation }) => {
       time: time.toLocaleTimeString(),
       status: "Confirmed",
     };
-    const openFeatureEvent = (item) => {
-      router.push({ pathname: "EventsHistory", params: { item } });
-    };
+
     try {
       // Save to Firebase
       await firestore().collection("bookings").add(booking);
@@ -62,7 +73,7 @@ const BookingForm = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1  bg-white">
+    <View className="flex-1 bg-white">
       <View
         style={{
           height: hp("10%"),
@@ -74,21 +85,12 @@ const BookingForm = ({ navigation }) => {
         </Text>
       </View>
       <View className="flex-1 p-8 bg-gray-200">
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Item Name:</Text>
         <TextInput
-          style={{
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 8,
-            padding: 8,
-            marginBottom: 16,
-          }}
           placeholder="Enter item name"
           value={itemName}
           onChangeText={setItemName}
         />
-
-        <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
+        <Button title="Select Date" onPress={showDatepicker} />
         {showDatePicker && (
           <DateTimePicker
             value={date}
@@ -97,11 +99,7 @@ const BookingForm = ({ navigation }) => {
             onChange={handleDateChange}
           />
         )}
-        <Text style={{ fontSize: 16, marginVertical: 8 }}>
-          Selected Date: {date.toLocaleDateString()}
-        </Text>
-
-        <Button title="Select Time" onPress={() => setShowTimePicker(true)} />
+        <Button title="Select Time" onPress={showTimepicker} />
         {showTimePicker && (
           <DateTimePicker
             value={time}
@@ -111,9 +109,11 @@ const BookingForm = ({ navigation }) => {
           />
         )}
         <Text style={{ fontSize: 16, marginVertical: 8 }}>
+          Selected Date: {date.toLocaleDateString()}
+        </Text>
+        <Text style={{ fontSize: 16, marginVertical: 8 }}>
           Selected Time: {time.toLocaleTimeString()}
         </Text>
-
         <Text
           style={{
             fontSize: 18,
