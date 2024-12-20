@@ -28,7 +28,7 @@ export default function AppLayout() {
           position: 'absolute',
           left: 30,
           right: 35,
-          bottom: 40,
+          bottom: 10,
         },
         }}
       >
